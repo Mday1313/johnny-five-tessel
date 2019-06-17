@@ -22,7 +22,7 @@ var tessel = require('tessel');
     },
 
     startPump: function(){
-        pump.isOn(1, function(err) {
+        pump.on(1, function(err) {
             if (err){
                 console.log(err);
             } else {} 
@@ -39,7 +39,7 @@ var tessel = require('tessel');
     }, 
 
     pumpState: function(callback) {
-        pump.getState(1, function(err, state){
+        pump.isOn(1, function(err, state){
             if (err) {callback(err)
             } else {
                 callback(state)

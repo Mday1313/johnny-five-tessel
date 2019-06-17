@@ -18,4 +18,4 @@ apiController(app);
 
 app.listen(port);
 
-console.log("Server running at wombat.local:" + port);
+console.log("Server running at 10.92.173.109:" + port);
