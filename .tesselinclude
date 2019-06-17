@@ -1,6 +1,7 @@
 
 index.html
-views
+
 node_modules
-public/js
-public/css
+
+public/logo.png
+public/style.css
