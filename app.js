@@ -11,10 +11,69 @@
  // Require two other core Node.js modules
  var fs = require('fs');
  var url = require('url');
+ var PORT = process.env.PORT || 8080;
+
+ var soilLevel = "";
 
 
  var pump = new five.Relay("b7");
 
+ var soilSensor = function(){
+  var dry = new five.Led("b0");
+  var wet = new five.Led("b1");
+  var both = new five.Leds([dry, wet]);
+  var soil = new five.Sensor({
+    pin: "a7",
+    
+  });
+
+  dry.on();
+
+
+  soil.on("data", () => {
+    
+    if (wet.isOn && soil.value < 300) {
+      both.toggle();
+   
+      
+    } else {
+      if (dry.isOn && soil.value > 300) {
+        both.toggle();
+       
+      }
+    }
+   soilLevel = soil.value
+    return soilLevel;
+  });
+  console.log("Soil moisture level: " + soilLevel);
+  console.log("--------------------------------------");
+}
+
+var atmosphere = function() {
+  var monitor = new five.Multi({
+    controller: "BME280",
+    freq: 60000
+  });
+
+  monitor.on("data", function() {
+
+    console.log("thermometer");
+   
+    console.log("  fahrenheit   : ", this.thermometer.fahrenheit);
+ 
+    console.log("--------------------------------------");
+
+    
+
+    console.log("Hygrometer");
+    console.log("  relative humidity : ", this.hygrometer.relativeHumidity+ " %");
+    console.log("--------------------------------------");
+
+   
+soilSensor();
+return atmosRead = [this.thermometer.fahrenheit, this.hygrometer.relativeHumidity]
+  });
+}
  board.on("ready", () => {
 
 
@@ -62,6 +121,7 @@
 
      // Serve the content of index.html read in by fs.readFile
      response.end(content);
+     atmosphere();
    });
  }
 
