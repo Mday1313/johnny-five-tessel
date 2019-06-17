@@ -1,31 +1,26 @@
 {
-  "name": "tessel_plantAndFishFeeder",
+  "name": "fishTankPump3",
   "version": "0.0.0",
-  "description": "control a pump connected to a watering system and a fish feeder on tessel board via a web interface",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "dependencies": {
-    "body-parser": "^1.15.2",
-    "ejs": "^2.5.2",
-    "express": "^4.17.1",
-    "express-handlebars": "^3.1.0",
-    "johnny-five": "^1.1.0",
-    "node-schedule": "^1.2.0",
-    "relay-mono": "^0.1.3",
-    "servo-pca9685": "^0.1.3",
-    "tessel": "^0.3.25",
-    "tessel-io": "^1.2.2"
-  },
-  "devDependencies": {},
+  "description": "Tessel project",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "git://github.com/finalwombat/tessel_plantAndFishFeeder.git",
+  "repository": "www.github.com/tessel/t2-cli",
   "keywords": [
     "Tessel"
   ],
   "license": "MIT",
-  "readme": "A bare bones Tessel 2 blinky script."
+  "readme": "A bare bones Tessel 2 blinky script.",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "ejs": "^2.6.2",
+    "express": "^4.17.1",
+    "http": "0.0.0",
+    "johnny-five": "^1.1.0",
+    "node-schedule": "^1.2.0",
+    "servo-pca9685": "^0.1.3",
+    "tessel-io": "^1.2.2"
+  },
+  "devDependencies": {}
 }
