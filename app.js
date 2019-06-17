@@ -1,21 +1,95 @@
-var express = require('express');
-var app = express();
+ // These two dependencies remain the same
+ var tessel = require('tessel');
+ var http = require('http');
+ var five = require("johnny-five");
+ var Tessel = require("tessel-io");
+ var board = new five.Board({
+    io: new Tessel(),
+   
+  });
+
+ // Require two other core Node.js modules
+ var fs = require('fs');
+ var url = require('url');
 
 
-var htmlController = require('./controllers/htmlController');
-var apiController = require('./controllers/apiController');
-var tesselController = require('./controllers/tesselController');
+ var pump = new five.Relay("b7");
 
-var port = process.env.PORT || 8080;
+ board.on("ready", () => {
 
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/public'));
-app.use('/public', express.static(__dirname + '/public'));
 
-htmlController(app);
-apiController(app);
+ var server = http.createServer(function (request, response) {
+   // Break up the url into easier-to-use parts
+   var urlParts = url.parse(request.url, true);
 
-app.listen(port);
+   // Create a regular expression to match requests to toggle LEDs
+   var pumpRegex = /pumps/;
 
-console.log("Server running at 10.92.173.109:" + port);
+   if (urlParts.pathname.match(pumpRegex)) {
+     // If there is a request containing the string 'leds' call a function, toggleLED
+     togglePump(urlParts.pathname, request, response);
+   } else {
+     // All other request will call a function, showIndex
+     showIndex(urlParts.pathname, request, response);
+   }
+ });
+
+ http.get({
+  hostname: 'https://soil-server-main.herokuapp.com',
+  path: '/api/t2',
+  agent: false  // Create a new agent just for this one request
+}, (res) => {
+  // console.log(res);
+});
+
+ // Stays the same
+ server.listen(8080);
+
+ // Stays the same
+ console.log('Server running at http://10.92.173.109:8080/');
+
+ // Respond to the request with our index.html page
+ function showIndex (url, request, response) {
+   // Create a response header telling the browser to expect html
+   response.writeHead(200, {"Content-Type": "text/html"});
+
+   // Use fs to read in index.html
+   fs.readFile(__dirname + '/index.html', function (err, content) {
+     // If there was an error, throw to stop code execution
+     if (err) {
+       throw err;
+     }
+
+     // Serve the content of index.html read in by fs.readFile
+     response.end(content);
+   });
+ }
+
+ // Toggle the led specified in the url and respond with its state
+ function togglePump (url, request, response) {
+   // Create a regular expression to find the number at the end of the url
+   var indexRegex = /(\d)$/;
+
+   // Capture the number, returns an array
+   var result = indexRegex.exec(url);
+
+   // Grab the captured result from the array
+   var index = result[1];
+
+ 
+
+   // Toggle the state of the led and call the callback after that's done
+   pump.toggle(function (err) {
+     if (err) {
+       // Log the error, send back a 500 (internal server error) response to the client
+       console.log(err);
+       response.writeHead(500, {"Content-Type": "application/json"});
+       response.end(JSON.stringify({error: err}));
+     } else {
+       // The led was successfully toggled, respond with the state of the toggled led using led.isOn
+       response.writeHead(200, {"Content-Type": "application/json"});
+       response.end(JSON.stringify({on: pump.isOn}));
+     }
+   });
+ }
+});
